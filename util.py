@@ -9,6 +9,42 @@ from shutil import copyfile
 
 import numpy as np
 
+# colors for keypoints
+COLORS = [ 
+        [ 255,   0,   0],  
+        [ 0,     255, 0],  
+        [ 0,     0,   255],  
+        [ 111,   74,   0],  
+        [  81,   0,     81],  
+        [ 128,   64,  128],  
+        [ 244,   35,  232],  
+        [ 250,   170,  160],  
+        [ 230,   150,  140],  
+        [  70,   70,    70],  
+        [ 102,   102, 156],  
+        [ 190,   153, 153],  
+        [ 180,   165, 180],  
+        [ 150,   100,  100],  
+        [ 150,   120,   90],  
+        [ 153,   153, 153],  
+        [ 153,   153, 153],  
+        [ 250,   170,   30],  
+        [ 220,   220,    0],  
+        [ 107,   142,  35],  
+        [ 152,   251, 152],  
+        [  70,   130,  180],  
+        [ 220,   20,    60],  
+        [ 255,   0,      0],  
+        [   0,    0,    142],  
+        [   0,    0,     70],  
+        [   0,    60,   100],  
+        [   0,    0,     90],  
+        [   0,    0,    110],  
+        [   0,    80,   100],  
+        [   0,    0,    230],  
+        [ 119,   11,   32],  
+    ]
+
 def dict2obj(d):
     if not isinstance(d, dict):
         return d
@@ -27,8 +63,7 @@ def cv2_plot_annotations(img, kpts=None, bboxes=None, point_rad=5, color=None):
 
     assert kpts is None or isinstance(kpts, list) or isinstance(kpts, np.ndarray)
     assert bboxes is None or isinstance(bboxes, list) or isinstance(bboxes, np.ndarray)
-    # assert bboxes is None or len(kpts) == len(bboxes)
-
+    
     _img = img.copy()
     n = len(kpts) if kpts is not None else len(bboxes)
 
