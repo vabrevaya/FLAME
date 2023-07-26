@@ -8,6 +8,7 @@ from datetime import datetime
 from shutil import copyfile
 
 import numpy as np
+from skimage.transform import estimate_transform, warp
 
 # colors for keypoints
 COLORS = [ 
