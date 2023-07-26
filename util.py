@@ -55,6 +55,64 @@ def dict2obj(d):
         o.__dict__[k] = dict2obj(d[k])
     return o
 
+def crop(
+        image, 
+        kpt, 
+        crop_size=224,
+        bbox_scale=1.,
+        normalize_kpt=True, 
+        return_transform=False
+    ):
+    """
+    Crop based on keypoints
+
+    Input:
+        image   :  cv2 image?
+        kpt     :  numpy array?
+    """
+
+    # assert crop_size is not None and isinstance(crop_size, int)
+
+    left = np.min(kpt[:,0])
+    right = np.max(kpt[:,0]); 
+    top = np.min(kpt[:,1])
+    bottom = np.max(kpt[:,1])
+
+    h, w = image.shape[:2]
+
+    if cfg.init_regression:
+        # just so that code is exactly the same
+        old_size = (right - left + bottom - top)/2
+        center = np.array([right - (right - left) / 2.0, bottom - (bottom - top) / 2.0 ])#+ old_size*0.1])
+    else:
+        center = np.array([left + (right - left) / 2.0, top + (bottom - top) / 2.0 ])#+ old_size*0.1])
+        old_size = max(right-left, bottom-top)
+    
+    if isinstance(bbox_scale, list):
+        bbox_scale = np.random.rand() * (bbox_scale[1] - bbox_scale[0]) + bbox_scale[0]
+    
+    size = int(old_size*bbox_scale)
+    
+    # crop 
+    src_pts = np.array([\
+            [center[0]-size/2, center[1]-size/2], 
+            [center[0] - size/2, center[1]+size/2], 
+            [center[0]+size/2, center[1]-size/2]
+    ])
+    dst_pts = np.array([[0,0], [0, crop_size - 1], [crop_size - 1, 0]])
+    tform = estimate_transform('similarity', src_pts, dst_pts)
+
+    cropped_img = warp(image, tform.inverse, output_shape=(crop_size, crop_size))
+    cropped_kpt = np.dot(tform.params, np.hstack([kpt, np.ones([kpt.shape[0],1])]).T).T # np.linalg.inv(tform.params)
+    
+    if normalize_kpt:
+        cropped_kpt[:,:2] = cropped_kpt[:,:2]/crop_size * 2  - 1
+
+    if return_transform:
+        return cropped_img, cropped_kpt, tform
+    else:
+        return cropped_img, cropped_kpt
+
 def cv2_plot_annotations(img, kpts=None, bboxes=None, point_rad=5, color=None):
     """
     TODO comment
