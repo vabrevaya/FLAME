@@ -79,14 +79,8 @@ def crop(
     bottom = np.max(kpt[:,1])
 
     h, w = image.shape[:2]
-
-    if cfg.init_regression:
-        # just so that code is exactly the same
-        old_size = (right - left + bottom - top)/2
-        center = np.array([right - (right - left) / 2.0, bottom - (bottom - top) / 2.0 ])#+ old_size*0.1])
-    else:
-        center = np.array([left + (right - left) / 2.0, top + (bottom - top) / 2.0 ])#+ old_size*0.1])
-        old_size = max(right-left, bottom-top)
+    center = np.array([left + (right - left) / 2.0, top + (bottom - top) / 2.0 ])#+ old_size*0.1])
+    old_size = max(right-left, bottom-top)
     
     if isinstance(bbox_scale, list):
         bbox_scale = np.random.rand() * (bbox_scale[1] - bbox_scale[0]) + bbox_scale[0]
